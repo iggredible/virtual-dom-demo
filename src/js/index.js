@@ -10,21 +10,23 @@ const createVirtualElem = (tagName, attrs, text, children) => {
   };
 };
 
-const childElemInput = createVirtualElem("input", { class: "iClass" }, "", []);
+const childElemInput = () =>
+  createVirtualElem("input", { class: "iClass" }, "", []);
 
-const childElemParagraph = createVirtualElem(
-  "p",
-  { class: "pClass" },
-  "I am paragraph child",
-  []
-);
+const childElemParagraph = num =>
+  createVirtualElem(
+    "p",
+    { class: "pClass" },
+    `child <p> element. Num: ${num}`,
+    []
+  );
 
 const createVirtualApp = num => {
   return createVirtualElem(
     "div",
     { class: "parentClass", id: "parentId" },
     `I am parent: ${num}`,
-    [childElemInput, childElemParagraph]
+    [childElemInput(), childElemParagraph(num)]
   );
 };
 
