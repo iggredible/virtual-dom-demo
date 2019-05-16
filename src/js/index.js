@@ -1,5 +1,6 @@
 import render from "./virtualDom/render";
 import mount from "./virtualDom/mount";
+import diff from "./virtualDom/diff";
 
 const createVirtualElem = (tagName, attrs, text, children) => {
   return {
@@ -24,19 +25,25 @@ const childElemParagraph = num =>
 const createVirtualApp = num => {
   return createVirtualElem(
     "div",
-    { class: "parentClass", id: "parentId" },
-    `I am parent: ${num}`,
+    { class: "parentClass", id: "parentId", datanum: num },
+    "",
     [childElemInput(), childElemParagraph(num)]
   );
 };
 
 const $appDiv = document.querySelector("#app");
 let num = 10;
-let $elem = render(createVirtualApp(num));
-let $rootElem = mount($elem, $appDiv);
+let virtualApp = createVirtualApp(num); // old virtual app
+let $elem = render(virtualApp); // eq to $app
+let $rootElem = mount($elem, $appDiv); // eq to mount($app, $appDiv)
 
 setInterval(() => {
   num++;
-  $elem = render(createVirtualApp(num));
+  const newVirtualApp = createVirtualApp(num);
+  // const patch = diff(virtualApp, newVirtualApp); // calling diff, returns a new function, we name it patch. Give it old and new VIRTUAL app
+  // $rootElem = patch($rootElem);
+  $elem = render(newVirtualApp);
   $rootElem = mount($elem, $rootElem);
+  virtualApp = newVirtualApp;
 }, 1000);
+// get their diff!
