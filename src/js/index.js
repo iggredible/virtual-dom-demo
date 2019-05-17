@@ -40,10 +40,7 @@ let $rootElem = mount($elem, $appDiv); // eq to mount($app, $appDiv)
 setInterval(() => {
   num++;
   const newVirtualApp = createVirtualApp(num);
-  // const patch = diff(virtualApp, newVirtualApp); // calling diff, returns a new function, we name it patch. Give it old and new VIRTUAL app
-  // $rootElem = patch($rootElem);
-  $elem = render(newVirtualApp);
-  $rootElem = mount($elem, $rootElem);
+  const patch = diff(virtualApp, newVirtualApp);
+  $rootElem = patch($rootElem);
   virtualApp = newVirtualApp;
 }, 1000);
-// get their diff!

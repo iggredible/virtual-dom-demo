@@ -6,24 +6,38 @@ const diffTexts = (oldText, newText) => {
 };
 
 const diffAttrs = (oldAttrs, newAttrs) => {
+  const patchAttrs = [];
 
+  for (const attr in newAttrs) {
+    patchAttrs.push($node => {
+      $node.setAttribute(attr, newAttrs[attr]);
+      return $node;
+    });
+  }
+
+  for (const k in oldAttrs) {
+    if (!(k in newAttrs)) {
+      patchAttrs.push($node => {
+        $node.removeAttribute(k);
+        return $node;
+      });
+    }
+  }
+
+  return $node => {
+    for (const patchAttr of patchAttrs) {
+      patchAttr($node);
+      // return $node;
+    }
+  };
 };
-const diff = (virtualOldNode, virtualNewNode) => {
-  console.log("virtualOldNode: ", virtualOldNode);
-  console.log("virtualNewNode: ", virtualNewNode);
-  // right now we can try to compare virtualNodes -
-  // for example, if their tagNames are different.
-  // But that is covered by Jason's vid. Watch it for ref!
-  // Our focus is less specific than Jason's vid.
-  // We are trying to render only the changed component.
 
-  // there is only ONE thing that is different: text
+const diff = (virtualOldNode, virtualNewNode) => {
   const patchText = diffTexts(virtualOldNode.text, virtualNewNode.text);
   const patchAttrs = diffAttrs(virtualOldNode.attrs, virtualNewNode.attrs);
 
-  // TODO: create another source of difference, like datacount attrs?
   return $node => {
-    patchText($node);
+    patchAttrs($node);
     return $node;
   };
 };
