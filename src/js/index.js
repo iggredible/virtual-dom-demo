@@ -12,12 +12,12 @@ const createVirtualElem = (tagName, attrs, text, children) => {
 };
 
 const childElemInput = () =>
-  createVirtualElem("input", { class: "iClass" }, "", []);
+  createVirtualElem("input", { class: "iAintChangin" }, "", []);
 
 const childElemParagraph = num =>
   createVirtualElem(
     "p",
-    { class: "pClass" },
+    { class: `iWillBeChanged-${num}`, id: "iAIntChangingEither" },
     `child <p> element. Num: ${num}`,
     []
   );
@@ -40,7 +40,14 @@ let $rootElem = mount($elem, $appDiv); // eq to mount($app, $appDiv)
 setInterval(() => {
   num++;
   const newVirtualApp = createVirtualApp(num);
+  /* diffing */
   const patch = diff(virtualApp, newVirtualApp);
   $rootElem = patch($rootElem);
+  /* diffing ends */
+
+  /* total rerender */
+  // $elem = render(newVirtualApp);
+  // $rootElem = mount($elem, $rootElem);
+  /* total rerender ends*/
   virtualApp = newVirtualApp;
 }, 1000);
