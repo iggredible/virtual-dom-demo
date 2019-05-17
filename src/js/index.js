@@ -12,7 +12,7 @@ const createVirtualElem = (tagName, attrs, text, children) => {
 };
 
 const childElemInput = () =>
-  createVirtualElem("input", { class: "iAintChangin" }, "", []);
+  createVirtualElem("input", { id: "iAintChangin" }, "", []);
 
 const childElemParagraph = num =>
   createVirtualElem(
@@ -22,6 +22,7 @@ const childElemParagraph = num =>
     []
   );
 
+/* create dynamic structure to be rendered */
 const createVirtualApp = num => {
   return createVirtualElem(
     "div",
@@ -34,14 +35,15 @@ const createVirtualApp = num => {
 const $appDiv = document.querySelector("#app");
 let num = 10;
 let virtualApp = createVirtualApp(num); // old virtual app
-let $elem = render(virtualApp); // eq to $app
-let $rootElem = mount($elem, $appDiv); // eq to mount($app, $appDiv)
+let $elem = render(virtualApp); // initial render
+let $rootElem = mount($elem, $appDiv); // replaced <div id="app" />
 
 setInterval(() => {
   num++;
   const newVirtualApp = createVirtualApp(num);
+
   /* diffing */
-  const patch = diff(virtualApp, newVirtualApp);
+  const patch = diff(virtualApp, newVirtualApp); // diffing using old and updated virtualApp
   $rootElem = patch($rootElem);
   /* diffing ends */
 
@@ -49,5 +51,6 @@ setInterval(() => {
   // $elem = render(newVirtualApp);
   // $rootElem = mount($elem, $rootElem);
   /* total rerender ends*/
-  virtualApp = newVirtualApp;
+
+  virtualApp = newVirtualApp; // update recent virtualApp with updated virtualApp with most recent num
 }, 1000);

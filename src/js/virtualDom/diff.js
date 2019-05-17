@@ -13,10 +13,10 @@ const zip = (xs, ys) => {
 };
 
 const diffChildren = (oldChildren, newChildren) => {
-  const patchChildren = [];
+  const childrenPatch = [];
   const patchOldNewChildrenDiff = [];
   oldChildren.forEach((oldChild, i) => {
-    patchChildren.push(diff(oldChild, newChildren[i]));
+    childrenPatch.push(diff(oldChild, newChildren[i]));
   });
 
   for (const additionalChild of newChildren.slice(oldChildren.length)) {
@@ -26,8 +26,8 @@ const diffChildren = (oldChildren, newChildren) => {
     });
   }
   return $parent => {
-    for (const [patch, child] of zip(patchChildren, $parent.childNodes)) {
-      patch(child);
+    for (const [patch, child] of zip(childrenPatch, $parent.childNodes)) {
+      patch(child); // why not patch($parent)?
     }
     for (const patch of patchOldNewChildrenDiff) {
       patch($parent);
@@ -37,7 +37,7 @@ const diffChildren = (oldChildren, newChildren) => {
 };
 
 const diffTexts = (oldText, newText) => {
-  if (newText) {
+  if (newText && newText !== oldText) {
     return $node => {
       $node.textContent = newText;
     };
@@ -46,10 +46,10 @@ const diffTexts = (oldText, newText) => {
 };
 
 const diffAttrs = (oldAttrs, newAttrs) => {
-  const patchAttrs = [];
+  const attrsPatch = [];
 
   for (const attr in newAttrs) {
-    patchAttrs.push($node => {
+    attrsPatch.push($node => {
       $node.setAttribute(attr, newAttrs[attr]);
       return $node;
     });
@@ -57,7 +57,7 @@ const diffAttrs = (oldAttrs, newAttrs) => {
 
   for (const k in oldAttrs) {
     if (!(k in newAttrs)) {
-      patchAttrs.push($node => {
+      attrsPatch.push($node => {
         $node.removeAttribute(k);
         return $node;
       });
@@ -65,7 +65,7 @@ const diffAttrs = (oldAttrs, newAttrs) => {
   }
 
   return $node => {
-    for (const patchAttr of patchAttrs) {
+    for (const patchAttr of attrsPatch) {
       patchAttr($node);
     }
   };
